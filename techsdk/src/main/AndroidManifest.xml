@@ -1,0 +1,11 @@
+<manifest package="com.tech"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity android:name="com.tech.android.TechResultActivity" android:launchMode="singleInstance"  android:configChanges="orientation|keyboard|keyboardHidden"></activity>
+        <activity android:name="com.tech.android.TechDetailActivity" android:launchMode="singleInstance"  android:configChanges="orientation|keyboard|keyboardHidden"></activity>
+
+        <service android:name="com.tech.android.TechService"></service>
+    </application>
+
+</manifest>

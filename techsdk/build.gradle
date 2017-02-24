@@ -1,0 +1,85 @@
+import org.gradle.api.internal.artifacts.DefaultPublishArtifactSet
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultLocalMavenRepositoryLocator
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenFileLocations
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenSettingsProvider
+import org.gradle.api.internal.artifacts.mvnsettings.LocalMavenRepositoryLocator
+import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+}
+
+group='com.alipay.techsdk'
+version='1.0.1'
+def mavenLocalRepo = ''
+
+afterEvaluate{
+
+    DefaultMavenFileLocations locations = new DefaultMavenFileLocations()
+    DefaultMavenSettingsProvider provider = new DefaultMavenSettingsProvider(locations)
+    LocalMavenRepositoryLocator locator = new DefaultLocalMavenRepositoryLocator(provider)
+
+    mavenLocalRepo = locator.localMavenRepository.absolutePath
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+//                repository (url: uri(mavenLocalRepo))
+                repository (url: 'http://localhost:8081/repository/maven-releases/'){
+                    authentication(userName: "admin", password: "123")
+                }
+            }
+        }
+    }
+
+    Task uploadArchivesTask = tasks.findByName("uploadArchives")
+    uploadArchivesTask.doFirst {
+        Date date = new Date()
+
+
+        DefaultPublishArtifactSet ass = it.configuration.getArtifacts()
+
+        File manifestFile = new File(buildDir.absolutePath + "/intermediates/bundles/release/AndroidManifest.xml")
+        DefaultPublishArtifact manifestArtifact = new DefaultPublishArtifact('', 'xml', 'xml', 'AndroidManifest', date, manifestFile, new Object[0])
+        ass.add(manifestArtifact)
+
+        Task transformDex = tasks.findByName('transformClassesAndResourcesWithSyncLibJarsForRelease')
+        transformDex.outputs.files.files.each {
+            if(it.absolutePath.contains("/classes.jar"))
+            {
+                DefaultPublishArtifact jarFileArtifact = new DefaultPublishArtifact('', 'jar', 'jar', '', date, it, new Object[0])
+                ass.add(jarFileArtifact)
+            }
+        }
+    }
+}
