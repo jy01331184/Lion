@@ -65,7 +65,7 @@ public class TechPlugin implements Plugin<Project> {
     }
 
     void hookCompile(Project o) {
-        Log.log(this, Constants.PLUGIN_VERSION+'hookCompile')
+        Log.log(this, Constants.PLUGIN_VERSION+' hookCompile')
         JavaCompile javaCompile = o.tasks.findByName('compileTechJavaWithJavac')
 
         javaCompile.doLast {

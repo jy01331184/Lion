@@ -42,7 +42,7 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
     }
 
     @Override
-    void mergeManifests(File mainManifest, List<File> manifestOverlays, List<? extends ManifestDependency> libraries, String packageOverride, int versionCode, String versionName, String minSdkVersion, String targetSdkVersion, Integer maxSdkVersion, String outManifestLocation, String outAaptSafeManifestLocation, ManifestMerger2.MergeType mergeType, Map<String, Object> placeHolders, File reportFile) {
+    void mergeManifests(File mainManifest, List<File> manifestOverlays, List<? extends ManifestDependency> libraries, String packageOverride, int versionCode, String versionName, String minSdkVersion, String targetSdkVersion, Integer maxSdkVersion, String outManifestLocation, String outAaptSafeManifestLocation, String outInstantRunManifestLocation, ManifestMerger2.MergeType mergeType, Map<String, Object> placeHolders, List<ManifestMerger2.Invoker.Feature> optionalFeatures, File reportFile) {
         Log.log(this, "merge manifest:"+manifestOverlays+":"+packageOverride+"-"+reportFile.absolutePath)
         project.configurations.each {
             if (it.name.equals("techsdk")) {
@@ -56,8 +56,13 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
             }
         }
         mergeType = ManifestMerger2.MergeType.APPLICATION
-        super.mergeManifests(mainManifest, manifestOverlays, libraries, packageOverride, versionCode, versionName, minSdkVersion, targetSdkVersion, maxSdkVersion, outManifestLocation, outAaptSafeManifestLocation, mergeType, placeHolders, reportFile)
+        super.mergeManifests(mainManifest, manifestOverlays, libraries, packageOverride, versionCode, versionName, minSdkVersion, targetSdkVersion, maxSdkVersion, outManifestLocation, outAaptSafeManifestLocation, outInstantRunManifestLocation, mergeType, placeHolders, optionalFeatures, reportFile)
+
     }
+
+
+//    void mergeManifests(File mainManifest, List<File> manifestOverlays, List<? extends ManifestDependency> libraries, String packageOverride, int versionCode, String versionName, String minSdkVersion, String targetSdkVersion, Integer maxSdkVersion, String outManifestLocation, String outAaptSafeManifestLocation, ManifestMerger2.MergeType mergeType, Map<String, Object> placeHolders, File reportFile) {
+//    }
 
     private static <T> T v(Object obj, String name) {
         try {

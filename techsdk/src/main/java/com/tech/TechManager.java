@@ -43,7 +43,8 @@ public abstract class TechManager {
     public static TechManager getInstance()
     {
         TechManager techManager = threadLocal.get();
-        managers.add(techManager);
+        if(!managers.contains(techManager))
+            managers.add(techManager);
         return techManager;
     }
 
