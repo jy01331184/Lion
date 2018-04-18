@@ -1,5 +1,5 @@
 # Lion
-<div align=center><img src="https://github.com/jy01331184/Lion/blob/master/image/lion.jpg">
+<div align=center><img width="512" height="384" src="https://github.com/jy01331184/Lion/blob/master/image/lion.jpg">
 </div>
 detect the info of the creation of objects
 
@@ -33,5 +33,10 @@ public class MainActivity extends Activity {
 ```
 
 the summary
-<div align=center><img src="https://github.com/jy01331184/Lion/blob/master/image/s1.jpg">
-</div>
+<img src="https://github.com/jy01331184/Lion/blob/master/image/s1.png">
+
+and detail for thread-main<br>
+<img width="270" height="444" src="https://github.com/jy01331184/Lion/blob/master/image/s2.png">
+
+detail for test-thread-01<br>
+<img width="270" height="444" src="https://github.com/jy01331184/Lion/blob/master/image/s3.png">
