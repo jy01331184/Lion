@@ -1,7 +1,8 @@
 # Lion
 <div align=center><img width="512" height="384" src="https://github.com/jy01331184/Lion/blob/master/image/lion.jpg">
 </div>
-detect the info of the creation of objects
+detect the info of the creation of objects.
+recurse and invoke chain is supported.
 
 for example..
 
