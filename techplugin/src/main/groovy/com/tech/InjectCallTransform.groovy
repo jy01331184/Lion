@@ -12,6 +12,7 @@ import com.google.common.io.Closeables
 import com.tech.util.Log
 import javassist.ClassPool
 import javassist.CtClass
+import javassist.CtField
 import javassist.CtMethod
 import javassist.NotFoundException
 import org.gradle.api.Project
@@ -21,6 +22,7 @@ import org.xml.sax.InputSource
 
 import javax.xml.xpath.XPath
 import javax.xml.xpath.XPathExpressionException
+
 /**
  * Created by tianyang on 16/7/28.
  * 标准项目 在application 或 mainactivity 添加 启动
@@ -42,15 +44,14 @@ public class InjectCallTransform {
             classes.appendClassPath(it.absolutePath)
         }
 
-        Log.log(this, 'inject transform for tech sdk:'+inputDir.absolutePath)
+        Log.log(this, 'inject transform for tech sdk:' + inputDir.absolutePath)
 
         javaCompile.classpath.each {
             classes.appendClassPath(it.absolutePath)
         }
 
         def target = findClassName()
-        if(target == null || target.length() ==0)
-        {
+        if (target == null || target.length() == 0) {
             Log.error(this, 'did not find target class to inject!')
             return
         }
@@ -66,20 +67,28 @@ public class InjectCallTransform {
                             if (ctcls.isFrozen()) {
                                 ctcls.defrost()
                             }
+                            CtField techInject
                             try {
-                                CtMethod onCreateMethod = ctcls.getDeclaredMethod('onCreate')
-
-                                if (onCreateMethod == null)
-                                    Log.error(this, 'class:' + clsName + ' does not have a onCreate method')
-                                else {
-                                    Log.log(this, 'tech sdk inject class:' + clsName)
-                                    onCreateMethod.insertAfter('com.tech.TechManager.getInstance().init(this);')
-                                    ctcls.writeFile(inputDir.absolutePath)
-                                }
-                            } catch (NotFoundException e) {
-                                Log.error(this, 'class:' + clsName + 'does not have a onCreate method')
+                                techInject = ctcls.getDeclaredField('techInit');
+                            } catch (Exception e) {
                             }
-                            throw new Exception()
+
+                            if (techInject == null) {
+                                try {
+                                    CtMethod onCreateMethod = ctcls.getDeclaredMethod('onCreate')
+
+                                    if (onCreateMethod == null)
+                                        Log.error(this, 'class:' + clsName + ' does not have a onCreate method')
+                                    else {
+                                        Log.log(this, 'tech sdk inject class:' + clsName)
+                                        onCreateMethod.insertAfter('com.tech.TechManager.getInstance().init(this);')
+                                        ctcls.addField(CtField.make("public int techInit = 0;", ctcls))
+                                        ctcls.writeFile(inputDir.absolutePath)
+                                    }
+                                } catch (NotFoundException e) {
+                                    Log.error(this, 'class:' + clsName + 'does not have a onCreate method')
+                                }
+                            }
                         }
                     }
                 }
@@ -115,7 +124,7 @@ public class InjectCallTransform {
         for (it in manifestTask.outputs.files) {
             if (it.name.endsWith('AndroidManifest.xml')) {
                 IAbstractFile asFile = AndroidManifest.getManifest(new FolderWrapper(it.parentFile))
-                if(asFile == null || !asFile.exists())
+                if (asFile == null || !asFile.exists())
                     continue
                 def applicationName = getStringValue(asFile, "/" + AndroidManifest.NODE_MANIFEST + "/" + AndroidManifest.NODE_APPLICATION + "/@" + AndroidXPathFactory.DEFAULT_NS_PREFIX + ":" + "name")
                 if (applicationName != null && applicationName.length() > 0) {

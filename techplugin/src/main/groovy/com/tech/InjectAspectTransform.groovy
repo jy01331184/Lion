@@ -47,7 +47,14 @@ public class InjectAspectTransform {
                         ctcls.defrost()
                     }
 
-                    if (ctcls.isAnnotation() || ctcls.isEnum() || ctcls.isInterface() || Modifier.isAbstract(ctcls.modifiers) || Modifier.isNative(ctcls.modifiers)) {
+
+                    CtField techInject;
+                    try {
+                        techInject = ctcls.getDeclaredField('techInject');
+                    } catch (Exception e) {
+                    }
+
+                    if (techInject != null || ctcls.isAnnotation() || ctcls.isEnum() || ctcls.isInterface() || Modifier.isAbstract(ctcls.modifiers) || Modifier.isNative(ctcls.modifiers)) {
 
                     } else {
                         try {
@@ -126,6 +133,7 @@ public class InjectAspectTransform {
 
                             }
 
+                            ctcls.addField(CtField.make("public int techInject = 0;", ctcls))
 
                             ctcls.writeFile(inputDir.absolutePath)
                         } catch (NotFoundException e) {
